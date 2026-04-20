@@ -1,0 +1,61 @@
+:root {
+  /* ── Paleta Azul Principal ── */
+  --color-primary-50:  #e3f2fd;
+  --color-primary-100: #bbdefb;
+  --color-primary-200: #90caf9;
+  --color-primary-300: #64b5f6;
+  --color-primary-400: #42a5f5;
+  --color-primary-500: #2196f3;  /* Principal */
+  --color-primary-600: #1e88e5;
+  --color-primary-700: #1976d2;  /* Hover / activo */
+  --color-primary-800: #1565c0;
+  --color-primary-900: #0d47a1;  /* Dark / énfasis */
+
+  /* ── Azul Profundo (accent) ── */
+  --color-accent-400:  #26c6da;
+  --color-accent-500:  #00bcd4;
+  --color-accent-700:  #0097a7;
+
+  /* ── Neutrales ── */
+  --color-bg:          #f0f4f8;
+  --color-surface:     #ffffff;
+  --color-surface-alt: #e8eef4;
+  --color-border:      #cfd8e3;
+
+  /* ── Texto ── */
+  --color-text-primary:   #0d1b2a;
+  --color-text-secondary: #4a6280;
+  --color-text-disabled:  #90a4b7;
+  --color-text-on-primary:#ffffff;
+
+  /* ── Estados ── */
+  --color-success: #00897b;
+  --color-warning: #f9a825;
+  --color-error:   #e53935;
+  --color-info:    #1976d2;
+
+  /* ── Elevación / sombras ── */
+  --shadow-sm:  0 1px 3px rgba(13,27,42,0.08), 0 1px 2px rgba(13,27,42,0.06);
+  --shadow-md:  0 4px 12px rgba(13,27,42,0.10), 0 2px 6px rgba(13,27,42,0.07);
+  --shadow-lg:  0 10px 30px rgba(13,27,42,0.12), 0 4px 12px rgba(13,27,42,0.08);
+
+  /* ── Espaciado ── */
+  --spacing-xs:  4px;
+  --spacing-sm:  8px;
+  --spacing-md:  16px;
+  --spacing-lg:  24px;
+  --spacing-xl:  32px;
+  --spacing-2xl: 48px;
+
+  /* ── Bordes ── */
+  --radius-sm:  6px;
+  --radius-md:  10px;
+  --radius-lg:  16px;
+  --radius-xl:  24px;
+  --radius-full: 9999px;
+
+  /* ── Transiciones ── */
+  --transition-fast:   150ms ease;
+  --transition-normal: 250ms ease;
+  --transition-slow:   400ms ease;
+}

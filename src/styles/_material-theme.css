@@ -1,0 +1,28 @@
+
+.mat-mdc-button.mat-primary,
+.mat-mdc-raised-button.mat-primary {
+  --mdc-filled-button-container-color: var(--color-primary-600);
+  --mdc-filled-button-label-text-color: var(--color-text-on-primary);
+}
+
+.mat-mdc-form-field {
+  width: 100%;
+}
+
+.mat-mdc-card {
+  --mdc-elevated-card-container-color: var(--color-surface);
+  border-radius: var(--radius-lg) !important;
+  box-shadow: var(--shadow-md) !important;
+}
+
+.mat-toolbar.mat-primary {
+  background: var(--color-primary-800) !important;
+}
+
+/* Snackbar de error */
+.snack-error .mdc-snackbar__surface {
+  background-color: var(--color-error) !important;
+}
+.snack-success .mdc-snackbar__surface {
+  background-color: var(--color-success) !important;
+}
