@@ -1,0 +1,132 @@
+<div class="profile-page">
+
+  <div class="profile-hero">
+    <div class="hero-bg"></div>
+    @if (user) {
+      <div class="hero-content">
+        <div class="avatar-wrapper">
+          @if (user.profilePicture) {
+            <img [src]="user.profilePicture" [alt]="user.name" class="avatar-img" />
+          } @else {
+            <div class="avatar-initials">{{ initials }}</div>
+          }
+        </div>
+        <div class="hero-info">
+          <h1 class="hero-name">{{ user.name }} {{ user.lastName }}</h1>
+          <p class="hero-username">&#64;{{ user.username }}</p>
+          <p class="hero-email">
+            <mat-icon>mail_outline</mat-icon>
+            {{ user.email }}
+          </p>
+        </div>
+      </div>
+    }
+  </div>
+
+  <div class="profile-body">
+
+    <mat-card class="profile-card">
+      <mat-card-header>
+        <mat-card-title>
+          <mat-icon>manage_accounts</mat-icon>
+          Información de perfil
+        </mat-card-title>
+        <mat-card-subtitle>Actualiza tu información personal</mat-card-subtitle>
+      </mat-card-header>
+
+      <mat-divider />
+
+      <mat-card-content>
+        <form [formGroup]="form" (ngSubmit)="save()" class="profile-form" novalidate>
+
+          <div class="form-row">
+            <mat-form-field appearance="outline">
+              <mat-label>Nombre</mat-label>
+              <input matInput formControlName="name" />
+              <mat-icon matPrefix>person_outline</mat-icon>
+              @if (form.get('name')?.hasError('required') && form.get('name')?.touched) {
+                <mat-error>El nombre es requerido</mat-error>
+              }
+            </mat-form-field>
+
+            <mat-form-field appearance="outline">
+              <mat-label>Apellido</mat-label>
+              <input matInput formControlName="lastName" />
+              <mat-icon matPrefix>person_outline</mat-icon>
+              @if (form.get('lastName')?.hasError('required') && form.get('lastName')?.touched) {
+                <mat-error>El apellido es requerido</mat-error>
+              }
+            </mat-form-field>
+          </div>
+
+          <mat-form-field appearance="outline">
+            <mat-label>Nombre de usuario</mat-label>
+            <input matInput formControlName="username" />
+            <mat-icon matPrefix>alternate_email</mat-icon>
+            <mat-hint>Entre 3 y 30 caracteres</mat-hint>
+            @if (form.get('username')?.hasError('required') && form.get('username')?.touched) {
+              <mat-error>El usuario es requerido</mat-error>
+            }
+          </mat-form-field>
+
+          <mat-form-field appearance="outline">
+            <mat-label>URL de foto de perfil</mat-label>
+            <input matInput formControlName="profilePicture"
+                   placeholder="https://ejemplo.com/foto.jpg" />
+            <mat-icon matPrefix>photo_camera</mat-icon>
+            <mat-hint>Opcional — URL pública de imagen</mat-hint>
+          </mat-form-field>
+
+          <div class="form-actions">
+            @if (!editMode()) {
+              <button mat-flat-button type="button" class="btn-edit" (click)="enableEdit()">
+                <mat-icon>edit</mat-icon> Editar perfil
+              </button>
+            } @else {
+              <button mat-stroked-button type="button" class="btn-cancel" (click)="cancelEdit()">
+                Cancelar
+              </button>
+              <button mat-flat-button type="submit" class="btn-save" [disabled]="loading()">
+                @if (loading()) {
+                  <mat-spinner diameter="18" />
+                  <span>Guardando...</span>
+                } @else {
+                  <mat-icon>save</mat-icon>
+                  <span>Guardar cambios</span>
+                }
+              </button>
+            }
+          </div>
+
+        </form>
+      </mat-card-content>
+    </mat-card>
+
+    <mat-card class="account-card">
+      <mat-card-header>
+        <mat-card-title>
+          <mat-icon>info_outline</mat-icon>
+          Detalles de la cuenta
+        </mat-card-title>
+      </mat-card-header>
+      <mat-divider />
+      <mat-card-content class="account-details">
+        <div class="detail-row">
+          <span class="detail-label">Correo electrónico</span>
+          <span class="detail-value">{{ user?.email }}</span>
+        </div>
+        <mat-divider />
+        <div class="detail-row">
+          <span class="detail-label">Miembro desde</span>
+          <span class="detail-value">{{ user?.createdAt | date:'medium' }}</span>
+        </div>
+        <mat-divider />
+        <div class="detail-row">
+          <span class="detail-label">Última actualización</span>
+          <span class="detail-value">{{ user?.updatedAt | date:'medium' }}</span>
+        </div>
+      </mat-card-content>
+    </mat-card>
+
+  </div>
+</div>

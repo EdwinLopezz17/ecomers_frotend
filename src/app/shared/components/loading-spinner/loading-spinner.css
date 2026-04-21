@@ -1,0 +1,11 @@
+.spinner-wrapper {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 12px;
+  padding: 32px;
+}
+.spinner-label {
+  color: var(--color-text-secondary);
+  font-size: 0.9rem;
+}

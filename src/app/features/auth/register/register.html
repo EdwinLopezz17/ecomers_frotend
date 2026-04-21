@@ -1,0 +1,113 @@
+<div class="auth-wrapper">
+  <div class="auth-card">
+
+    <div class="auth-brand">
+      <div class="brand-icon">
+        <mat-icon>person_add</mat-icon>
+      </div>
+      <h1 class="brand-title">Crear cuenta</h1>
+      <p class="brand-sub">Es gratis y rápido</p>
+    </div>
+
+    <mat-stepper linear #stepper class="register-stepper">
+
+      <mat-step [stepControl]="personalForm" label="Datos personales">
+        <form [formGroup]="personalForm" class="auth-form" novalidate>
+
+          <mat-form-field appearance="outline">
+            <mat-label>Nombre</mat-label>
+            <input matInput formControlName="name" placeholder="Juan" autocomplete="given-name" />
+            <mat-icon matPrefix>badge</mat-icon>
+            @if (personalForm.get('name')?.hasError('required') && personalForm.get('name')?.touched) {
+              <mat-error>El nombre es requerido</mat-error>
+            }
+          </mat-form-field>
+
+          <mat-form-field appearance="outline">
+            <mat-label>Apellido</mat-label>
+            <input matInput formControlName="lastName" placeholder="Pérez" autocomplete="family-name" />
+            <mat-icon matPrefix>badge</mat-icon>
+            @if (personalForm.get('lastName')?.hasError('required') && personalForm.get('lastName')?.touched) {
+              <mat-error>El apellido es requerido</mat-error>
+            }
+          </mat-form-field>
+
+          <div class="step-actions">
+            <button mat-flat-button matStepperNext type="button" class="btn-submit"
+                    (click)="personalForm.markAllAsTouched()"
+                    [disabled]="personalForm.invalid">
+              <span>Continuar</span>
+              <mat-icon>arrow_forward</mat-icon>
+            </button>
+          </div>
+
+        </form>
+      </mat-step>
+
+      <mat-step [stepControl]="accountForm" label="Tu cuenta">
+        <form [formGroup]="accountForm" (ngSubmit)="submit()" class="auth-form" novalidate>
+
+          <mat-form-field appearance="outline">
+            <mat-label>Nombre de usuario</mat-label>
+            <input matInput formControlName="username" placeholder="juanperez99" autocomplete="username" />
+            <mat-icon matPrefix>alternate_email</mat-icon>
+            @if (accountForm.get('username')?.hasError('required') && accountForm.get('username')?.touched) {
+              <mat-error>El usuario es requerido</mat-error>
+            } @else if (accountForm.get('username')?.hasError('minlength') && accountForm.get('username')?.touched) {
+              <mat-error>Mínimo 3 caracteres</mat-error>
+            }
+          </mat-form-field>
+
+          <mat-form-field appearance="outline">
+            <mat-label>Correo electrónico</mat-label>
+            <input matInput type="email" formControlName="email"
+                   placeholder="tu@correo.com" autocomplete="email" />
+            <mat-icon matPrefix>mail_outline</mat-icon>
+            @if (accountForm.get('email')?.hasError('required') && accountForm.get('email')?.touched) {
+              <mat-error>El correo es requerido</mat-error>
+            } @else if (accountForm.get('email')?.hasError('email') && accountForm.get('email')?.touched) {
+              <mat-error>Correo inválido</mat-error>
+            }
+          </mat-form-field>
+
+          <mat-form-field appearance="outline">
+            <mat-label>Contraseña</mat-label>
+            <input matInput [type]="showPassword() ? 'text' : 'password'"
+                   formControlName="password" autocomplete="new-password" />
+            <mat-icon matPrefix>lock_outline</mat-icon>
+            <button mat-icon-button matSuffix type="button" (click)="togglePassword()">
+              <mat-icon>{{ showPassword() ? 'visibility_off' : 'visibility' }}</mat-icon>
+            </button>
+            @if (accountForm.get('password')?.hasError('required') && accountForm.get('password')?.touched) {
+              <mat-error>La contraseña es requerida</mat-error>
+            } @else if (accountForm.get('password')?.hasError('minlength') && accountForm.get('password')?.touched) {
+              <mat-error>Mínimo 6 caracteres</mat-error>
+            }
+          </mat-form-field>
+
+          <div class="step-actions two-cols">
+            <button mat-stroked-button matStepperPrevious type="button" class="btn-back">
+              <mat-icon>arrow_back</mat-icon> Volver
+            </button>
+            <button mat-flat-button type="submit" class="btn-submit" [disabled]="loading()">
+              @if (loading()) {
+                <mat-spinner diameter="20" />
+                <span>Creando...</span>
+              } @else {
+                <mat-icon>check_circle</mat-icon>
+                <span>Crear cuenta</span>
+              }
+            </button>
+          </div>
+
+        </form>
+      </mat-step>
+
+    </mat-stepper>
+
+    <p class="auth-footer">
+      ¿Ya tienes cuenta? <a routerLink="/auth/login">Iniciar sesión</a>
+    </p>
+
+  </div>
+</div>

@@ -1,0 +1,60 @@
+<div class="auth-wrapper">
+  <div class="auth-card">
+
+    <div class="auth-brand">
+      <div class="brand-icon">
+        <mat-icon>storefront</mat-icon>
+      </div>
+      <h1 class="brand-title">eCommers</h1>
+      <p class="brand-sub">Bienvenido de nuevo</p>
+    </div>
+
+    <form [formGroup]="form" (ngSubmit)="submit()" class="auth-form" novalidate>
+
+      <mat-form-field appearance="outline">
+        <mat-label>Correo electrónico</mat-label>
+        <input matInput type="email" formControlName="email"
+               placeholder="tu@correo.com" autocomplete="email" />
+        <mat-icon matPrefix>mail_outline</mat-icon>
+        @if (form.get('email')?.hasError('required') && form.get('email')?.touched) {
+          <mat-error>El correo es requerido</mat-error>
+        } @else if (form.get('email')?.hasError('email') && form.get('email')?.touched) {
+          <mat-error>Ingresa un correo válido</mat-error>
+        }
+      </mat-form-field>
+
+      <mat-form-field appearance="outline">
+        <mat-label>Contraseña</mat-label>
+        <input matInput [type]="showPassword() ? 'text' : 'password'"
+               formControlName="password" autocomplete="current-password" />
+        <mat-icon matPrefix>lock_outline</mat-icon>
+        <button mat-icon-button matSuffix type="button"
+                (click)="togglePassword()" [attr.aria-label]="'Mostrar contraseña'">
+          <mat-icon>{{ showPassword() ? 'visibility_off' : 'visibility' }}</mat-icon>
+        </button>
+        @if (form.get('password')?.hasError('required') && form.get('password')?.touched) {
+          <mat-error>La contraseña es requerida</mat-error>
+        } @else if (form.get('password')?.hasError('minlength') && form.get('password')?.touched) {
+          <mat-error>Mínimo 6 caracteres</mat-error>
+        }
+      </mat-form-field>
+
+      <button mat-flat-button type="submit" class="btn-submit" [disabled]="loading()">
+        @if (loading()) {
+          <mat-spinner diameter="20" />
+          <span>Ingresando...</span>
+        } @else {
+          <mat-icon>login</mat-icon>
+          <span>Iniciar sesión</span>
+        }
+      </button>
+
+    </form>
+
+    <p class="auth-footer">
+      ¿No tienes cuenta?
+      <a routerLink="/auth/register">Regístrate gratis</a>
+    </p>
+
+  </div>
+</div>

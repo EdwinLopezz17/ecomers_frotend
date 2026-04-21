@@ -1,0 +1,43 @@
+<mat-toolbar class="header-toolbar" color="primary">
+  <div class="container flex-between header-inner">
+
+    <a routerLink="/" class="logo">
+      <mat-icon>storefront</mat-icon>
+      <span>eCommers</span>
+    </a>
+
+    <nav class="nav-links">
+      <a mat-button routerLink="/">Productos</a>
+      @if (auth.isLoggedIn()) {
+        <a mat-button routerLink="/orders">Mis pedidos</a>
+      }
+    </nav>
+
+    <div class="header-actions">
+      @if (auth.isLoggedIn()) {
+        <a mat-icon-button routerLink="/cart" aria-label="Carrito">
+          <mat-icon>shopping_cart</mat-icon>
+        </a>
+        <button mat-icon-button [matMenuTriggerFor]="userMenu" aria-label="Usuario">
+          <mat-icon>account_circle</mat-icon>
+        </button>
+        <mat-menu #userMenu="matMenu">
+          <div class="menu-user-info">
+            <span class="menu-name">{{ auth.currentUser()?.name }} {{ auth.currentUser()?.lastName }}</span>
+            <span class="menu-email">{{ auth.currentUser()?.email }}</span>
+          </div>
+          <button mat-menu-item routerLink="/profile">
+            <mat-icon>person</mat-icon> Mi perfil
+          </button>
+          <button mat-menu-item (click)="logout()">
+            <mat-icon>logout</mat-icon> Cerrar sesión
+          </button>
+        </mat-menu>
+      } @else {
+        <a mat-button routerLink="/auth/login">Iniciar sesión</a>
+        <a mat-raised-button routerLink="/auth/register" color="accent">Registrarse</a>
+      }
+    </div>
+
+  </div>
+</mat-toolbar>

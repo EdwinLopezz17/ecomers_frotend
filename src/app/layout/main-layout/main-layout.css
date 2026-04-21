@@ -1,0 +1,4 @@
+.main-wrapper {
+  background-color: var(--color-bg);
+  min-height: calc(100vh - 64px - 60px);
+}

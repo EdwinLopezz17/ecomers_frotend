@@ -1,6 +1,6 @@
 export interface UpdateProfileRequest {
-  name?:string;
-  lastName?:string;
-  username?:string;
-  profileImage?:string;
+  name?: string;
+  lastName?: string;
+  username?: string;
+  profilePicture?: string;
 }

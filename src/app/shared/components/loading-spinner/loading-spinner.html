@@ -1,0 +1,6 @@
+<div class="spinner-wrapper">
+  <mat-spinner [diameter]="diameter()" color="primary" />
+  @if (label()) {
+    <p class="spinner-label">{{ label() }}</p>
+  }
+</div>
