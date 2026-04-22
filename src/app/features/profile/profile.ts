@@ -9,7 +9,7 @@ import { MatDivider } from '@angular/material/list';
 import { MatError, MatFormField, MatHint, MatInput, MatLabel } from '@angular/material/input';
 import { MatButton } from '@angular/material/button';
 import { MatProgressSpinner } from '@angular/material/progress-spinner';
-import { DatePipe, NgOptimizedImage } from '@angular/common';
+import { DatePipe } from '@angular/common';
 
 @Component({
   selector: 'app-profile',
@@ -30,7 +30,6 @@ import { DatePipe, NgOptimizedImage } from '@angular/common';
     MatButton,
     MatProgressSpinner,
     DatePipe,
-    NgOptimizedImage,
   ],
   templateUrl: './profile.html',
   styleUrl: './profile.css',

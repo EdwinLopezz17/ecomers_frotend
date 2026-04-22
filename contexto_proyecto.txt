@@ -8809,7 +8809,7 @@ import { MatDivider } from '@angular/material/list';
 import { MatError, MatFormField, MatHint, MatInput, MatLabel } from '@angular/material/input';
 import { MatButton } from '@angular/material/button';
 import { MatProgressSpinner } from '@angular/material/progress-spinner';
-import { DatePipe } from '@angular/common';
+import { DatePipe, NgOptimizedImage } from '@angular/common';
 
 @Component({
   selector: 'app-profile',
@@ -8830,6 +8830,7 @@ import { DatePipe } from '@angular/common';
     MatButton,
     MatProgressSpinner,
     DatePipe,
+    NgOptimizedImage,
   ],
   templateUrl: './profile.html',
   styleUrl: './profile.css',
@@ -8853,10 +8854,19 @@ export class Profile implements OnInit {
   ngOnInit() {
     this.loadUser();
     this.form.disable();
+
+    this.userSvc.getProfile().subscribe({
+      next: (res) => {
+        this.auth.updateUser(res.data);
+        this.loadUser();
+      },
+      error: () => {},
+    });
   }
 
   private loadUser() {
     const u = this.auth.currentUser();
+    this.user;
     if (u) {
       this.form.patchValue({
         name: u.name,
@@ -9188,7 +9198,7 @@ export class Profile implements OnInit {
         <mat-divider />
         <div class="detail-row">
           <span class="detail-label">Miembro desde</span>
-          <span class="detail-value">{{ user?.updatedAt | date:'medium':'':'es' }}</span>
+          <span class="detail-value">{{ user?.createdAt | date:'medium' }}</span>
         </div>
         <mat-divider />
         <div class="detail-row">

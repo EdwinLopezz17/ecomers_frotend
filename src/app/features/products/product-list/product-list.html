@@ -1,1 +1,190 @@
-<p>product-list works!</p>
+<div class="shop-page">
+
+  <section class="hero-banner">
+    <div class="hero-content">
+      <h1 class="hero-title">Descubre los mejores productos</h1>
+      <p class="hero-sub">Calidad garantizada · Envío rápido · Los mejores precios</p>
+
+      <div class="search-bar">
+        <mat-icon class="search-icon">search</mat-icon>
+        <input
+          type="text"
+          class="search-input"
+          placeholder="¿Qué estás buscando hoy?"
+          [value]="searchQuery()"
+          (input)="onSearchInput($any($event.target).value)"
+        />
+        @if (searchQuery()) {
+          <button class="search-clear" (click)="clearSearch()">
+            <mat-icon>close</mat-icon>
+          </button>
+        }
+      </div>
+    </div>
+  </section>
+
+  <div class="toolbar-wrapper">
+    <div class="toolbar container">
+
+      <div class="category-chips">
+        <button
+          class="chip"
+          [class.chip-active]="selectedCat() === null && !searchQuery()"
+          (click)="selectCategory(null)">
+          <mat-icon>grid_view</mat-icon> Todos
+        </button>
+        @for (cat of categories(); track cat.id) {
+          <button
+            class="chip"
+            [class.chip-active]="selectedCat() === cat.id"
+            (click)="selectCategory(cat.id)">
+            {{ cat.name }}
+          </button>
+        }
+      </div>
+
+      <div class="toolbar-right">
+        <select class="sort-select" [value]="sortOrder()"
+                (change)="onSortChange($any($event.target).value)">
+          @for (opt of sortOptions; track opt.value) {
+            <option [value]="opt.value">{{ opt.label }}</option>
+          }
+        </select>
+
+        <div class="view-toggle">
+          <button class="view-btn" [class.active]="viewMode() === 'grid'"
+                  (click)="viewMode.set('grid')" matTooltip="Vista cuadrícula">
+            <mat-icon>grid_view</mat-icon>
+          </button>
+          <button class="view-btn" [class.active]="viewMode() === 'list'"
+                  (click)="viewMode.set('list')" matTooltip="Vista lista">
+            <mat-icon>view_list</mat-icon>
+          </button>
+        </div>
+      </div>
+
+    </div>
+  </div>
+
+  <div class="results-bar container">
+    @if (!loading()) {
+      <span class="results-count">
+        <strong>{{ totalElements() }}</strong> producto{{ totalElements() !== 1 ? 's' : '' }}
+        @if (activeFilterLabel) {
+          <span class="filter-tag">
+            {{ activeFilterLabel }}
+            <button (click)="clearSearch()"><mat-icon>close</mat-icon></button>
+          </span>
+        }
+      </span>
+    }
+  </div>
+
+  <div class="container products-container">
+    @if (loading()) {
+      <div class="loading-grid" [class.list-mode]="viewMode() === 'list'">
+        @for (i of [1,2,3,4,5,6,7,8,9,10,11,12]; track i) {
+          <div class="skeleton-card"></div>
+        }
+      </div>
+    }
+
+    @if (!loading() && products().length > 0) {
+      <div class="products-grid" [class.list-mode]="viewMode() === 'list'">
+        @for (product of products(); track product.id) {
+          <div class="product-card" [class.out-of-stock]="!hasStock(product)">
+
+            @if (!hasStock(product)) {
+              <div class="badge badge-oos">Sin stock</div>
+            }
+
+            <div class="card-image-wrapper">
+              <img
+                [src]="getImageUrl(product)"
+                [alt]="product.name"
+                class="card-image"
+                loading="lazy"
+                (error)="onImageError($event, product.id)"
+              />>
+              <div class="card-overlay">
+                <button
+                  mat-icon-button
+                  class="overlay-btn"
+                  matTooltip="Agregar al carrito"
+                  (click)="addToCart(product, $event)"
+                  [disabled]="!hasStock(product)">
+                  <mat-icon>add_shopping_cart</mat-icon>
+                </button>
+              </div>
+            </div>
+
+            <div class="card-body">
+              <span class="card-category">{{ product.categoryName }}</span>
+              <h3 class="card-name" [title]="product.name">{{ product.name }}</h3>
+
+              @if (viewMode() === 'list') {
+                <p class="card-description">{{ product.description }}</p>
+              }
+
+              <p class="card-seller">
+                <mat-icon>store</mat-icon> {{ product.sellerName }}
+              </p>
+
+              <div class="card-footer">
+                <div class="price-block">
+                  <span class="card-price">
+                    {{ product.price | currency:'PEN':'S/ ':'1.2-2' }}
+                  </span>
+                </div>
+
+                <button
+                  class="btn-add-cart"
+                  [class.disabled]="!hasStock(product)"
+                  (click)="addToCart(product, $event)"
+                  [disabled]="!hasStock(product)">
+                  <mat-icon>add_shopping_cart</mat-icon>
+                  <span>Agregar</span>
+                </button>
+              </div>
+
+              @if (hasStock(product) && product.stock <= 5) {
+                <p class="low-stock">
+                  <mat-icon>warning_amber</mat-icon>
+                  ¡Solo {{ product.stock }} disponible{{ product.stock > 1 ? 's' : '' }}!
+                </p>
+              }
+            </div>
+
+          </div>
+        }
+      </div>
+    }
+
+    @if (!loading() && products().length === 0) {
+      <div class="empty-state">
+        <mat-icon class="empty-icon">search_off</mat-icon>
+        <h3>No encontramos productos</h3>
+        <p>Intenta con otro término de búsqueda o explora todas las categorías</p>
+        <button mat-flat-button class="btn-clear-filter" (click)="clearSearch()">
+          Ver todos los productos
+        </button>
+      </div>
+    }
+
+    @if (!loading() && hasMore) {
+      <div class="load-more-wrapper">
+        <button class="btn-load-more" (click)="loadMore()" [disabled]="loadingMore()">
+          @if (loadingMore()) {
+            <mat-spinner diameter="20" />
+            <span>Cargando...</span>
+          } @else {
+            <mat-icon>expand_more</mat-icon>
+            <span>Cargar más productos</span>
+          }
+        </button>
+      </div>
+    }
+
+  </div>
+
+</div>
