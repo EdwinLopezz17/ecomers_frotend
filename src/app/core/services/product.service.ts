@@ -1,7 +1,13 @@
 import { inject, Injectable } from '@angular/core';
 import { HttpClient, HttpParams } from '@angular/common/http';
 import { ApiResponse } from '../models/auth.models';
-import { CategoryResponse, PageResponse, ProductResponse } from '../models/product.model';
+import {
+  CategoryResponse,
+  CreateProductRequest,
+  PageResponse,
+  ProductResponse,
+  UpdateProductRequest,
+} from '../models/product.model';
 
 @Injectable({
   providedIn: 'root',
@@ -29,7 +35,7 @@ export class ProductService {
   }
 
   getByCategory(categoryId: number, page = 0, size = 12) {
-    const params = new HttpParams().set('page', page).set('size', size)
+    const params = new HttpParams().set('page', page).set('size', size);
 
     return this.http.get<ApiResponse<PageResponse<ProductResponse>>>(
       `${this.API}/products/category/${categoryId}`,
@@ -37,11 +43,40 @@ export class ProductService {
     );
   }
 
-  getCategories(){
+  getCategories() {
     return this.http.get<ApiResponse<CategoryResponse[]>>(`${this.API}/categories/roots`);
   }
 
-  getImageUrl(filename: string):string{
+  getImageUrl(filename: string): string {
     return `${this.API.replace('/api', '')}/uploads/${filename}`;
+  }
+
+  getMyProducts(page = 0, size = 12) {
+    const params = new HttpParams().set('page', page).set('size', size);
+    return this.http.get<ApiResponse<PageResponse<ProductResponse>>>(`${this.API}/products/me`, {
+      params,
+    });
+  }
+
+  createProduct(body: CreateProductRequest) {
+    return this.http.post<ApiResponse<ProductResponse>>(`${this.API}/products`, body);
+  }
+
+  updateProduct(id:number, body:UpdateProductRequest){
+    return this.http.put<ApiResponse<ProductResponse>>(
+      `${this.API}/products/${id}`, body
+    )
+  }
+
+  deleteProduct(id:number){
+    return this.http.delete<ApiResponse<null>>(`${this.API}/products/${id}`);
+  }
+
+  uploadImages(productId:number, files: File[]){
+    const form = new FormData()
+    files.forEach(f => form.append('files', f))
+    return this.http.post<ApiResponse<ProductResponse>>(
+      `${this.API}/products/${productId}/images`, form
+    )
   }
 }

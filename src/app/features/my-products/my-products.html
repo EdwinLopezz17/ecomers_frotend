@@ -1,0 +1,432 @@
+<div class="my-products-page">
+
+  <div class="page-header">
+    <div>
+      <h1 class="page-title">
+        <mat-icon>inventory_2</mat-icon>
+        Mis productos
+      </h1>
+      <p class="page-sub">Gestiona tu catálogo de productos</p>
+    </div>
+    <button class="btn-publish" (click)="openCreate()">
+      <mat-icon>add</mat-icon>
+      Publicar producto
+    </button>
+  </div>
+
+  @if (!loading()) {
+    <div class="stats-row">
+      <div class="stat-card">
+        <mat-icon class="stat-icon icon-blue">inventory_2</mat-icon>
+        <div>
+          <span class="stat-num">{{ totalElements() }}</span>
+          <span class="stat-label">Total publicados</span>
+        </div>
+      </div>
+      <div class="stat-card">
+        <mat-icon class="stat-icon icon-green">check_circle</mat-icon>
+        <div>
+          <span class="stat-num">{{ stats().inStock }}</span>
+          <span class="stat-label">Con stock</span>
+        </div>
+      </div>
+      <div class="stat-card">
+        <mat-icon class="stat-icon icon-orange">warning_amber</mat-icon>
+        <div>
+          <span class="stat-num">{{ stats().lowStock }}</span>
+          <span class="stat-label">Stock bajo (≤5)</span>
+        </div>
+      </div>
+      <div class="stat-card">
+        <mat-icon class="stat-icon icon-red">remove_circle</mat-icon>
+        <div>
+          <span class="stat-num">{{ stats().outStock }}</span>
+          <span class="stat-label">Sin stock</span>
+        </div>
+      </div>
+    </div>
+  }
+
+  @if (loading()) {
+    <div class="table-skeleton">
+      @for (i of [1,2,3,4,5]; track i) {
+        <div class="skeleton-row"></div>
+      }
+    </div>
+  }
+
+  @if (!loading() && products().length > 0) {
+    <div class="table-wrapper">
+      <table class="products-table">
+        <thead>
+        <tr>
+          <th class="col-product">Producto</th>
+          <th class="col-cat">Categoría</th>
+          <th class="col-price">Precio</th>
+          <th class="col-stock">Stock</th>
+          <th class="col-images">Imágenes</th>
+          <th class="col-actions">Acciones</th>
+        </tr>
+        </thead>
+        <tbody>
+          @for (p of products(); track p.id) {
+            <tr class="table-row" [class.row-oos]="p.stock === 0">
+
+              <td class="col-product">
+                <div class="product-cell">
+                  <div class="thumb-wrapper">
+                    <img
+                      [src]="getImageUrl(p)"
+                      [alt]="p.name"
+                      class="thumb"
+                      (error)="onImgError($event, p.id)"
+                    />
+                  </div>
+                  <div class="product-info">
+                    <span class="product-name">{{ p.name }}</span>
+                    <span class="product-desc">{{ p.description || '—' }}</span>
+                  </div>
+                </div>
+              </td>
+
+              <td class="col-cat">
+                <span class="cat-badge">{{ p.categoryName }}</span>
+              </td>
+
+              <td class="col-price">
+                <span class="price-val">{{ p.price | currency:'PEN':'S/ ':'1.2-2' }}</span>
+              </td>
+
+              <td class="col-stock">
+                <button
+                  class="stock-pill"
+                  [class]="stockClass(p.stock)"
+                  (click)="openStock(p)"
+                  matTooltip="Clic para editar stock">
+                  <mat-icon>
+                    {{ p.stock === 0 ? 'remove_circle' : p.stock <= 5 ? 'warning_amber' : 'check_circle' }}
+                  </mat-icon>
+                  {{ p.stock }} uds.
+                </button>
+              </td>
+
+              <td class="col-images">
+                <button class="imgs-pill" (click)="openImages(p)" matTooltip="Gestionar imágenes">
+                  <mat-icon>photo_library</mat-icon>
+                  {{ p.images?.length ?? 0 }}
+                </button>
+              </td>
+
+
+              <td class="col-actions">
+                <div class="actions-group">
+                  <button mat-icon-button class="action-btn edit-btn"
+                          (click)="openEdit(p)" matTooltip="Editar producto">
+                    <mat-icon>edit</mat-icon>
+                  </button>
+                  <button mat-icon-button class="action-btn img-btn"
+                          (click)="openImages(p)" matTooltip="Gestionar imágenes">
+                    <mat-icon>add_photo_alternate</mat-icon>
+                  </button>
+                  <button mat-icon-button class="action-btn del-btn"
+                          (click)="confirmDelete(p)" matTooltip="Eliminar producto"
+                          [disabled]="deletingId() === p.id">
+                    @if (deletingId() === p.id) {
+                      <mat-spinner diameter="18" />
+                    } @else {
+                      <mat-icon>delete_outline</mat-icon>
+                    }
+                  </button>
+                </div>
+              </td>
+
+            </tr>
+          }
+        </tbody>
+      </table>
+    </div>
+
+    @if (hasMore()) {
+      <div class="load-more">
+        <button class="btn-load-more" (click)="loadMore()" [disabled]="loadingMore()">
+          @if (loadingMore()) {
+            <mat-spinner diameter="18" /><span>Cargando...</span>
+          } @else {
+            <mat-icon>expand_more</mat-icon><span>Cargar más</span>
+          }
+        </button>
+      </div>
+    }
+  }
+
+  @if (!loading() && products().length === 0) {
+    <div class="empty-state">
+      <div class="empty-icon-wrapper">
+        <mat-icon>storefront</mat-icon>
+      </div>
+      <h3>Aún no tienes productos publicados</h3>
+      <p>Comienza a vender publicando tu primer producto</p>
+      <button class="btn-publish" (click)="openCreate()">
+        <mat-icon>add</mat-icon> Publicar primer producto
+      </button>
+    </div>
+  }
+
+</div>
+
+@if (modalMode() !== null) {
+  <div class="modal-overlay" (click)="closeModal()">
+    <div class="modal-panel" (click)="$event.stopPropagation()">
+
+      @if (modalMode() === 'create' || modalMode() === 'edit') {
+        <div class="modal-header">
+          <div class="modal-title">
+            <mat-icon>{{ modalMode() === 'create' ? 'add_box' : 'edit' }}</mat-icon>
+            {{ modalMode() === 'create' ? 'Publicar nuevo producto' : 'Editar producto' }}
+          </div>
+          <button class="modal-close" (click)="closeModal()">
+            <mat-icon>close</mat-icon>
+          </button>
+        </div>
+
+        <div class="modal-body">
+          <form [formGroup]="productForm" (ngSubmit)="saveProduct()" class="product-form" novalidate>
+
+            <mat-form-field appearance="outline">
+              <mat-label>Nombre del producto</mat-label>
+              <input matInput formControlName="name" placeholder="Ej: Laptop Gaming 15.6" />
+              <mat-icon matPrefix>label</mat-icon>
+              @if (productForm.get('name')?.hasError('required') && productForm.get('name')?.touched) {
+                <mat-error>El nombre es requerido</mat-error>
+              }
+            </mat-form-field>
+
+            <mat-form-field appearance="outline">
+              <mat-label>Descripción</mat-label>
+              <textarea matInput formControlName="description" rows="3"
+                        placeholder="Describe tu producto..."></textarea>
+              <mat-icon matPrefix>description</mat-icon>
+              <mat-hint>Opcional — ayuda a los compradores a encontrar tu producto</mat-hint>
+            </mat-form-field>
+
+            <div class="form-row-2">
+              <mat-form-field appearance="outline">
+                <mat-label>Precio (S/)</mat-label>
+                <input matInput type="number" formControlName="price"
+                       placeholder="0.00" step="0.01" min="0.01" />
+                <mat-icon matPrefix>attach_money</mat-icon>
+                @if (productForm.get('price')?.hasError('required') && productForm.get('price')?.touched) {
+                  <mat-error>El precio es requerido</mat-error>
+                } @else if (productForm.get('price')?.hasError('min') && productForm.get('price')?.touched) {
+                  <mat-error>Mínimo S/ 0.01</mat-error>
+                }
+              </mat-form-field>
+
+              <mat-form-field appearance="outline">
+                <mat-label>Stock inicial</mat-label>
+                <input matInput type="number" formControlName="stock"
+                       placeholder="0" min="0" step="1" />
+                <mat-icon matPrefix>inventory</mat-icon>
+                @if (productForm.get('stock')?.hasError('required') && productForm.get('stock')?.touched) {
+                  <mat-error>El stock es requerido</mat-error>
+                }
+              </mat-form-field>
+            </div>
+
+            <mat-form-field appearance="outline">
+              <mat-label>Categoría</mat-label>
+              <mat-select formControlName="categoryId">
+                @for (cat of categories(); track cat.id) {
+                  <mat-option [value]="cat.id">{{ cat.name }}</mat-option>
+                  @for (sub of cat.children; track sub.id) {
+                    <mat-option [value]="sub.id">&nbsp;&nbsp;↳ {{ sub.name }}</mat-option>
+                  }
+                }
+              </mat-select>
+              <mat-icon matPrefix>category</mat-icon>
+              @if (productForm.get('categoryId')?.hasError('required') && productForm.get('categoryId')?.touched) {
+                <mat-error>Selecciona una categoría</mat-error>
+              }
+            </mat-form-field>
+
+            <div class="modal-footer">
+              <button type="button" class="btn-cancel" (click)="closeModal()">
+                Cancelar
+              </button>
+              <button type="submit" class="btn-save" [disabled]="saving()">
+                @if (saving()) {
+                  <mat-spinner diameter="18" />
+                  <span>Guardando...</span>
+                } @else {
+                  <mat-icon>{{ modalMode() === 'create' ? 'rocket_launch' : 'save' }}</mat-icon>
+                  <span>{{ modalMode() === 'create' ? 'Publicar' : 'Guardar cambios' }}</span>
+                }
+              </button>
+            </div>
+
+          </form>
+        </div>
+      }
+
+      @if (modalMode() === 'images') {
+        <div class="modal-header">
+          <div class="modal-title">
+            <mat-icon>photo_library</mat-icon>
+            Imágenes — {{ selectedProduct()?.name }}
+          </div>
+          <button class="modal-close" (click)="closeModal()">
+            <mat-icon>close</mat-icon>
+          </button>
+        </div>
+
+        <div class="modal-body">
+
+          @if (selectedProduct()?.images?.length) {
+            <p class="section-label">
+              <mat-icon>collections</mat-icon>
+              Imágenes actuales ({{ selectedProduct()!.images.length }})
+            </p>
+            <div class="images-grid">
+              @for (img of selectedProduct()!.images; track img; let i = $index) {
+                <div class="img-thumb-wrapper">
+                  @if (i === 0) {
+                    <span class="img-badge-main">Principal</span>
+                  }
+                  <img
+                    [src]="getProductImageUrl(img)"
+                    [alt]="'Imagen ' + (i+1)"
+                    class="img-thumb"
+                  />
+                </div>
+              }
+            </div>
+          } @else {
+            <div class="no-images-hint">
+              <mat-icon>image_not_supported</mat-icon>
+              <span>Este producto no tiene imágenes aún</span>
+            </div>
+          }
+
+          <p class="section-label" style="margin-top: 20px;">
+            <mat-icon>upload</mat-icon>
+            Agregar imágenes (máx. 5 por carga · 5MB c/u)
+          </p>
+
+          <div
+            class="dropzone"
+            [class.drag-active]="dragOver()"
+            (dragover)="$event.preventDefault(); dragOver.set(true)"
+            (dragleave)="dragOver.set(false)"
+            (drop)="onFileDrop($event)"
+            (click)="fileInput.click()">
+            <mat-icon class="drop-icon">cloud_upload</mat-icon>
+            <p class="drop-text">Arrastra imágenes aquí o <span>haz clic para seleccionar</span></p>
+            <p class="drop-hint">PNG, JPG, WEBP — máximo 5MB por archivo</p>
+            <input #fileInput type="file" accept="image/*" multiple hidden
+                   (change)="onFileSelect($event)" />
+          </div>
+
+          @if (pendingPreviews().length > 0) {
+            <div class="pending-grid">
+              @for (preview of pendingPreviews(); track preview; let i = $index) {
+                <div class="pending-item">
+                  <img [src]="preview" alt="preview" class="pending-thumb" />
+                  <button class="remove-pending" (click)="removePending(i)">
+                    <mat-icon>close</mat-icon>
+                  </button>
+                </div>
+              }
+            </div>
+          }
+
+          <div class="modal-footer">
+            <button type="button" class="btn-cancel" (click)="closeModal()">
+              Cerrar
+            </button>
+            @if (pendingFiles().length > 0) {
+              <button class="btn-save" (click)="uploadImages()" [disabled]="uploadingImgs()">
+                @if (uploadingImgs()) {
+                  <mat-spinner diameter="18" /><span>Subiendo...</span>
+                } @else {
+                  <mat-icon>cloud_upload</mat-icon>
+                  <span>Subir {{ pendingFiles().length }} imagen(es)</span>
+                }
+              </button>
+            }
+          </div>
+        </div>
+      }
+
+      @if (modalMode() === 'stock') {
+        <div class="modal-header">
+          <div class="modal-title">
+            <mat-icon>inventory</mat-icon>
+            Actualizar stock
+          </div>
+          <button class="modal-close" (click)="closeModal()">
+            <mat-icon>close</mat-icon>
+          </button>
+        </div>
+
+        <div class="modal-body">
+          <p class="stock-product-name">{{ selectedProduct()?.name }}</p>
+
+          <div class="stock-editor">
+            <button class="stock-btn minus" (click)="adjustStock(-10)"
+                    matTooltip="-10">
+              <mat-icon>remove</mat-icon><span>-10</span>
+            </button>
+            <button class="stock-btn minus" (click)="adjustStock(-1)"
+                    matTooltip="-1">
+              <mat-icon>remove</mat-icon><span>-1</span>
+            </button>
+
+            <input
+              type="number"
+              class="stock-input"
+              [value]="stockValue()"
+              (input)="stockValue.set(+$any($event.target).value)"
+              min="0"
+            />
+
+            <button class="stock-btn plus" (click)="adjustStock(1)"
+                    matTooltip="+1">
+              <mat-icon>add</mat-icon><span>+1</span>
+            </button>
+            <button class="stock-btn plus" (click)="adjustStock(10)"
+                    matTooltip="+10">
+              <mat-icon>add</mat-icon><span>+10</span>
+            </button>
+          </div>
+
+          <div class="stock-status-preview" [class]="stockClass(stockValue())">
+            <mat-icon>
+              {{ stockValue() === 0 ? 'remove_circle' : stockValue() <= 5 ? 'warning_amber' : 'check_circle' }}
+            </mat-icon>
+            @if (stockValue() === 0) {
+              Sin stock — producto no visible para compradores
+            } @else if (stockValue() <= 5) {
+              Stock bajo — se avisará a los compradores
+            } @else {
+              En stock — disponible para compra
+            }
+          </div>
+
+          <div class="modal-footer">
+            <button type="button" class="btn-cancel" (click)="closeModal()">
+              Cancelar
+            </button>
+            <button class="btn-save" (click)="saveStock()" [disabled]="saving()">
+              @if (saving()) {
+                <mat-spinner diameter="18" /><span>Guardando...</span>
+              } @else {
+                <mat-icon>save</mat-icon><span>Guardar stock</span>
+              }
+            </button>
+          </div>
+        </div>
+      }
+
+    </div>
+  </div>
+}

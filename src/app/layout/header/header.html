@@ -15,6 +15,9 @@
 
     <div class="header-actions">
       @if (auth.isLoggedIn()) {
+        <a mat-button routerLink="/my-products" routerLinkActive="nav-active">
+          <mat-icon>inventory_2</mat-icon> Mis productos
+        </a>
         <a mat-icon-button routerLink="/cart" aria-label="Carrito">
           <mat-icon>shopping_cart</mat-icon>
         </a>

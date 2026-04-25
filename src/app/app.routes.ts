@@ -5,21 +5,17 @@ import { guestGuard } from './core/guards/guest.guard';
 export const routes: Routes = [
   {
     path: '',
-    loadComponent: () =>
-      import('./layout/main-layout/main-layout').then((m) => m.MainLayout),
+    loadComponent: () => import('./layout/main-layout/main-layout').then((m) => m.MainLayout),
     children: [
       {
         path: '',
         loadComponent: () =>
-          import('./features/products/product-list/product-list').then(
-            (m) => m.ProductList,
-          ),
+          import('./features/products/product-list/product-list').then((m) => m.ProductList),
       },
       {
         path: 'profile',
         canActivate: [authGuard],
-        loadComponent: () =>
-          import('./features/profile/profile').then((m) => m.Profile),
+        loadComponent: () => import('./features/profile/profile').then((m) => m.Profile),
       },
       {
         path: 'cart',
@@ -29,8 +25,12 @@ export const routes: Routes = [
       {
         path: 'orders',
         canActivate: [authGuard],
-        loadComponent: () =>
-          import('./features/orders/orders').then((m) => m.Orders),
+        loadComponent: () => import('./features/orders/orders').then((m) => m.Orders),
+      },
+      {
+        path: 'my-products',
+        canActivate: [authGuard],
+        loadComponent: () => import('./features/my-products/my-products').then((m) => m.MyProducts),
       },
     ],
   },
@@ -40,13 +40,11 @@ export const routes: Routes = [
     children: [
       {
         path: 'login',
-        loadComponent: () =>
-          import('./features/auth/login/login').then((m) => m.Login),
+        loadComponent: () => import('./features/auth/login/login').then((m) => m.Login),
       },
       {
         path: 'register',
-        loadComponent: () =>
-          import('./features/auth/register/register').then((m) => m.Register),
+        loadComponent: () => import('./features/auth/register/register').then((m) => m.Register),
       },
       { path: '', redirectTo: 'login', pathMatch: 'full' },
     ],
